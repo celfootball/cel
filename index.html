@@ -163,7 +163,7 @@ const clubs = [
 ["🇦🇹","Austria","SV Eisenwald",9,2,0,7,7,20,-13,6],
 ["🇵🇱","Poland","Warsaw Legion",9,1,1,7,6,21,-15,4],
 ["🇭🇺","Hungary","FC Danubia",9,1,1,7,5,20,-15,4],
-["🇵🇱","Poland","FC Wislania",9,1,0,8,7,25,-18,30]
+["🇵🇱","Poland","FC Wislania",9,1,0,8,7,25,-18,3]
 ].map((c,i)=>({flag:c[0],country:c[1],name:c[2],p:c[3],w:c[4],d:c[5],l:c[6],gf:c[7],ga:c[8],gd:c[9],pts:c[10],rank:i+1}));
 const country=document.getElementById('country'), search=document.getElementById('search'), view=document.getElementById('view');
 [...new Set(clubs.map(c=>c.country))].sort().forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;country.appendChild(o)});
