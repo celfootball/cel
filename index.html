@@ -59,9 +59,13 @@ td:nth-child(2){text-align:left}
 .points{font-weight:900;color:#fff;font-size:15px}
 .positive{color:#9be875}.negative{color:#ff9c9c}.neutral{color:#9eafc2}
 .position{display:inline-grid;place-items:center;min-width:26px;height:26px;border-radius:7px}
-.qualify td:first-child .position{background:#183c31;color:#a7f0ca}
+
+/* Qualification / relegation zones */
+.champions td:first-child .position{background:#183c31;color:#a7f0ca}
 .europa td:first-child .position{background:#18304b;color:#9bcbff}
+.conference td:first-child .position{background:#4b3a18;color:#ffd98a}
 .relegation td:first-child .position{background:#40242a;color:#ffaaaa}
+
 .form{display:flex;justify-content:center;gap:3px}
 .form span{display:grid;place-items:center;width:19px;height:19px;border-radius:5px;font-size:10px;font-weight:900}
 .form .w{background:#214b3c;color:#a8f0c6}.form .d{background:#343e4b;color:#d5deea}.form .l{background:#4b2930;color:#ffb5bc}
@@ -104,7 +108,11 @@ footer{display:flex;justify-content:space-between;gap:12px;color:#63758b;font-si
       </div>
       <div class="tools-right">
         <select id="country" aria-label="Filter by country"><option value="">All countries</option></select>
-        <select id="view" aria-label="Filter table"><option value="all">All positions</option><option value="top4">Top 4</option><option value="bottom4">Bottom 4</option></select>
+        <select id="view" aria-label="Filter table">
+          <option value="all">All positions</option>
+          <option value="top3">Top 3</option>
+          <option value="bottom3">Bottom 3</option>
+        </select>
         <button class="ghost" id="reset">Reset</button>
       </div>
     </div>
@@ -119,14 +127,15 @@ footer{display:flex;justify-content:space-between;gap:12px;color:#63758b;font-si
       <div id="empty" class="empty" hidden>No clubs match your search.</div>
     </div>
     <div class="legend">
-      <span><i class="dot" style="background:#367e60"></i>Top 4 places</span>
-      <span><i class="dot" style="background:#477fb7"></i>European places</span>
-      <span><i class="dot" style="background:#a84e5b"></i>Bottom 4</span>
+      <span><i class="dot" style="background:#367e60"></i>1st — Champions League (Qualification)</span>
+      <span><i class="dot" style="background:#477fb7"></i>2nd — Europa League (Qualification)</span>
+      <span><i class="dot" style="background:#b58b2f"></i>3rd — Conference League (Qualification)</span>
+      <span><i class="dot" style="background:#a84e5b"></i>30th–32nd — Relegation to CEL2</span>
     </div>
   </section>
   <section class="note">
     <div><strong>CEL Match Centre</strong><p>Points, goal difference, matches played and rank are calculated automatically. The table always ranks by points, then goal difference, then goals scored.</p></div>
-    <div class="mark">ONE LEAGUE · ONE TABLE</div>
+    <div class="mark">TOP 3 EUROPE · BOTTOM 3 RELEGATED</div>
   </section>
   <footer><span>© Central European League · CEL</span><span>Standings are subject to change after each matchday.</span></footer>
 </main>
@@ -146,6 +155,12 @@ footer{display:flex;justify-content:space-between;gap:12px;color:#63758b;font-si
      GD  = gf - ga
      PTS = (w × 3) + (d × 1)
      Rank = sorted by PTS ↓, then GD ↓, then GF ↓, then name A–Z
+
+   Qualification zones:
+     1st = Champions League (Qualification)
+     2nd = Europa League (Qualification)
+     3rd = Conference League (Qualification)
+     30th–32nd = Relegation to CEL2
 
    To add a team, copy any line below and change the values:
    { flag:"🇸🇮", country:"Slovenia", name:"New Club", w:0, d:0, l:0, gf:0, ga:0 },
@@ -188,9 +203,7 @@ const clubs = [
 
 const WIN_POINTS = 3;
 const DRAW_POINTS = 1;
-const TOP_ZONE = 4;        // ranks 1–4 highlighted green
-const EUROPA_ZONE = 8;     // ranks 5–8 highlighted blue
-const BOTTOM_ZONE = 4;     // last 4 highlighted red
+const RELEGATION_COUNT = 3; // 30th, 31st and 32nd with 32 clubs
 
 /* Build the table: calculate P, GD, PTS, then rank. */
 function buildTable(){
@@ -265,8 +278,12 @@ function render(){
     (`${c.name} ${c.country}`.toLowerCase().includes(q))
   );
 
-  if(view.value === 'top4')    rows = rows.filter(c => c.rank <= TOP_ZONE);
-  if(view.value === 'bottom4') rows = rows.filter(c => c.rank > table.length - BOTTOM_ZONE);
+  if(view.value === 'top3') {
+    rows = rows.filter(c => c.rank <= 3);
+  }
+  if(view.value === 'bottom3') {
+    rows = rows.filter(c => c.rank > table.length - RELEGATION_COUNT);
+  }
 
   rows.sort((a,b)=>{
     const x = a[sortKey], y = b[sortKey];
@@ -275,11 +292,15 @@ function render(){
   });
 
   document.getElementById('tableBody').innerHTML = rows.map(c=>{
-    const zone = c.rank <= TOP_ZONE ? 'qualify'
-               : c.rank <= EUROPA_ZONE ? 'europa'
-               : c.rank > table.length - BOTTOM_ZONE ? 'relegation' : '';
+    const zone =
+      c.rank === 1 ? 'champions' :
+      c.rank === 2 ? 'europa' :
+      c.rank === 3 ? 'conference' :
+      c.rank > table.length - RELEGATION_COUNT ? 'relegation' : '';
+
     const gdClass = c.gd > 0 ? 'positive' : c.gd < 0 ? 'negative' : 'neutral';
     const gdText  = (c.gd > 0 ? '+' : '') + c.gd;
+
     return `<tr class="${zone}">
       <td><span class="position">${c.rank}</span></td>
       <td><div class="club"><span class="flag">${c.flag}</span><span class="club-name">${c.name}</span></div></td>
