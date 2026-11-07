@@ -1649,8 +1649,16 @@ function getSquadInjuries(teamName, squad) {
 }
 
 function getLeagueLeaders() {
-    const sig = MATCH_SCHEDULE.filter(m => m.phase === 'FT').length;
-    if (cachedLeaders && cacheSig === sig) return cachedLeaders;
+    let visibleEventCount = 0;
+    const now = Date.now();
+    MATCH_SCHEDULE.forEach(m => {
+        const state = getLiveState(m, now);
+        if (state.phase !== 'upcoming') {
+            visibleEventCount += m.events.filter(e => state.phase === 'FT' || e.minute <= state.currentM).length;
+        }
+    });
+
+    if (cachedLeaders && cacheSig === visibleEventCount) return cachedLeaders;
 
     let allPlayers = [];
     BASE_CLUBS.forEach(club => {
@@ -1671,7 +1679,7 @@ function getLeagueLeaders() {
         assists: [...allPlayers].sort((a, b) => b.assists - a.assists).slice(0, 5),
         saves: [...allPlayers].filter(p => p.saves > 0).sort((a, b) => b.saves - a.saves).slice(0, 5)
     };
-    cacheSig = sig;
+    cacheSig = visibleEventCount;
     return cachedLeaders;
 }
 
@@ -1943,7 +1951,13 @@ function matchRowHtml(m) {
   let state = 'upcoming', status;
   if (m.phase === '1H' || m.phase === '2H') {
     state = 'live';
-    status = `<span class="st-main live" style="color:var(--accent);display:flex;gap:6px;align-items:center;"><i class="live-dot" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);"></i>${m.currentM > 45 ? `45+${formatClock(m.displaySec - 45 * 60)}` : formatClock(m.displaySec)}</span><span class="st-sub" style="font-size:11px;font-weight:600;color:var(--muted)">Live</span>`;
+    let timeDisplay = '';
+    if (m.phase === '1H') {
+        timeDisplay = m.currentM > 45 ? `45+${formatClock(m.displaySec - 45*60)}` : formatClock(m.displaySec);
+    } else {
+        timeDisplay = m.currentM > 90 ? `90+${formatClock(m.displaySec - 90*60)}` : formatClock(m.displaySec);
+    }
+    status = `<span class="st-main live" style="color:var(--accent);display:flex;gap:6px;align-items:center;"><i class="live-dot" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);"></i>${timeDisplay}</span><span class="st-sub" style="font-size:11px;font-weight:600;color:var(--muted)">Live</span>`;
   } else if (m.phase === 'HT') {
     state = 'live';
     status = `<span class="st-main ht" style="color:#ffd97a;">HT</span><span class="st-sub" style="font-size:11px;font-weight:600;color:var(--muted)">${formatClock(m.displaySec)}</span>`;
