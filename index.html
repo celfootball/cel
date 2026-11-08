@@ -1127,19 +1127,136 @@ const MATCHDAY_OFFSET = 10;
 const FIRST_NAMES = ["J.", "M.", "T.", "L.", "P.", "A.", "D.", "R.", "K.", "S.", "F.", "B.", "C.", "E.", "G.", "H.", "I.", "O.", "V.", "N.", "U.", "Z.", "Y.", "X."];
 const LAST_NAMES = ["Novák", "Kowalski", "Horváth", "Schmid", "Nowak", "Kovács", "Fischer", "Weber", "Mägi", "Varga", "Popescu", "Müller", "Jensen", "Lindqvist", "Bakker", "Šimić", "Petrov", "Virtanen", "Dvořák", "Horvat", "Lehner", "Kováč", "Kranjc", "Mlakar", "Novak", "Zupan", "Kralj", "Pavlin", "Kozel", "Babič", "Jurić", "Matić", "Babić", "Tomić", "Kovačić", "Božić", "Blažević", "Grgić", "Pavlović", "Radić"];
 
-const MATTERHORN_STARTING_XI = [
-    { pos: "GK", name: "Miguel Bañuz", nat: "🇪🇸" },
-    { pos: "RB", name: "Lukas Steiner", nat: "🇨🇭" },
-    { pos: "CB", name: "Niko Varga", nat: "🇭🇷" },
-    { pos: "CB", name: "Matthias Frei", nat: "🇨🇭" },
-    { pos: "LB", name: "Adrien Moreau", nat: "🇫🇷" },
-    { pos: "CDM", name: "Jonas Baumann", nat: "🇨🇭" },
-    { pos: "CM", name: "Milan Kovačević", nat: "🇷🇸" },
-    { pos: "CAM", name: "Daniel Costa", nat: "🇵🇹" },
-    { pos: "RW", name: "Alejandro García", nat: "🇪🇸" },
-    { pos: "LW", name: "Nikolaos Papadopoulos", nat: "🇬🇷" },
-    { pos: "ST", name: "Luka Rdekovič", nat: "🇭🇷" }
-];
+const BUILT_IN_SQUADS = {
+    "FK Vltava Praha": [
+        { pos: "GK", name: "J. Virtanen", nat: "🇨🇿" }, { pos: "RB", name: "M. Dvořák", nat: "🇨🇿" }, { pos: "CB", name: "P. Svoboda", nat: "🇨🇿" }, { pos: "CB", name: "T. Novák", nat: "🇨🇿" }, { pos: "LB", name: "L. Černý", nat: "🇨🇿" }, { pos: "CDM", name: "A. Procházka", nat: "🇨🇿" }, { pos: "CM", name: "S. Kučera", nat: "🇨🇿" }, { pos: "CAM", name: "F. Veselý", nat: "🇨🇿" }, { pos: "RW", name: "D. Horák", nat: "🇨🇿" }, { pos: "LW", name: "R. Němec", nat: "🇨🇿" }, { pos: "ST", name: "K. Marek", nat: "🇨🇿" },
+        { pos: "GK", name: "B. Pospíšil", nat: "🇨🇿" }, { pos: "DEF", name: "E. Hájek", nat: "🇨🇿" }, { pos: "DEF", name: "G. Jelínek", nat: "🇨🇿" }, { pos: "MID", name: "H. Král", nat: "🇨🇿" }, { pos: "MID", name: "I. Růžička", nat: "🇨🇿" }, { pos: "FWD", name: "J. Beneš", nat: "🇨🇿" }, { pos: "FWD", name: "O. Fiala", nat: "🇨🇿" }
+    ],
+    "Maribor Crown": [
+        { pos: "GK", name: "M. Novak", nat: "🇸🇮" }, { pos: "RB", name: "J. Horvat", nat: "🇸🇮" }, { pos: "CB", name: "A. Kovač", nat: "🇸🇮" }, { pos: "CB", name: "T. Zupan", nat: "🇸🇮" }, { pos: "LB", name: "L. Kralj", nat: "🇸🇮" }, { pos: "CDM", name: "P. Mlakar", nat: "🇸🇮" }, { pos: "CM", name: "S. Pavlin", nat: "🇸🇮" }, { pos: "CAM", name: "F. Kozel", nat: "🇸🇮" }, { pos: "RW", name: "D. Babič", nat: "🇸🇮" }, { pos: "LW", name: "R. Jurić", nat: "🇸🇮" }, { pos: "ST", name: "K. Matić", nat: "🇸🇮" },
+        { pos: "GK", name: "B. Kranjc", nat: "🇸🇮" }, { pos: "DEF", name: "E. Zajc", nat: "🇸🇮" }, { pos: "DEF", name: "G. Vidmar", nat: "🇸🇮" }, { pos: "MID", name: "H. Oblak", nat: "🇸🇮" }, { pos: "MID", name: "I. Srečko", nat: "🇸🇮" }, { pos: "FWD", name: "J. Šimic", nat: "🇸🇮" }, { pos: "FWD", name: "O. Beric", nat: "🇸🇮" }
+    ],
+    "Ljubljana Vihor": [
+        { pos: "GK", name: "J. Oblak", nat: "🇸🇮" }, { pos: "RB", name: "M. Vidmar", nat: "🇸🇮" }, { pos: "CB", name: "P. Zajc", nat: "🇸🇮" }, { pos: "CB", name: "T. Srečko", nat: "🇸🇮" }, { pos: "LB", name: "L. Beric", nat: "🇸🇮" }, { pos: "CDM", name: "A. Šimic", nat: "🇸🇮" }, { pos: "CM", name: "S. Zorman", nat: "🇸🇮" }, { pos: "CAM", name: "F. Stevanović", nat: "🇸🇮" }, { pos: "RW", name: "D. Šporar", nat: "🇸🇮" }, { pos: "LW", name: "R. Vuckic", nat: "🇸🇮" }, { pos: "ST", name: "K. Bajič", nat: "🇸🇮" },
+        { pos: "GK", name: "B. Rozman", nat: "🇸🇮" }, { pos: "DEF", name: "E. Mevlja", nat: "🇸🇮" }, { pos: "DEF", name: "G. Balkovec", nat: "🇸🇮" }, { pos: "MID", name: "H. Kurtic", nat: "🇸🇮" }, { pos: "MID", name: "I. Elsnik", nat: "🇸🇮" }, { pos: "FWD", name: "J. Seslar", nat: "🇸🇮" }, { pos: "FWD", name: "O. Celofiga", nat: "🇸🇮" }
+    ],
+    "Brno Viktoria": [
+        { pos: "GK", name: "J. Staněk", nat: "🇨🇿" }, { pos: "RB", name: "M. Coufal", nat: "🇨🇿" }, { pos: "CB", name: "P. Brabec", nat: "🇨🇿" }, { pos: "CB", name: "T. Holeš", nat: "🇨🇿" }, { pos: "LB", name: "L. Novák", nat: "🇨🇿" }, { pos: "CDM", name: "A. Král", nat: "🇨🇿" }, { pos: "CM", name: "S. Souček", nat: "🇨🇿" }, { pos: "CAM", name: "F. Provod", nat: "🇨🇿" }, { pos: "RW", name: "D. Barák", nat: "🇨🇿" }, { pos: "LW", name: "R. Hložek", nat: "🇨🇿" }, { pos: "ST", name: "K. Schick", nat: "🇨🇿" },
+        { pos: "GK", name: "B. Mandous", nat: "🇨🇿" }, { pos: "DEF", name: "E. Zima", nat: "🇨🇿" }, { pos: "DEF", name: "G. Matějů", nat: "🇨🇿" }, { pos: "MID", name: "H. Masopust", nat: "🇨🇿" }, { pos: "MID", name: "I. Jankto", nat: "🇨🇿" }, { pos: "FWD", name: "J. Kuchta", nat: "🇨🇿" }, { pos: "FWD", name: "O. Lingr", nat: "🇨🇿" }
+    ],
+    "Dresden Adler": [
+        { pos: "GK", name: "J. Neuer", nat: "🇩🇪" }, { pos: "RB", name: "M. Kimmich", nat: "🇩🇪" }, { pos: "CB", name: "P. Rüdiger", nat: "🇩🇪" }, { pos: "CB", name: "T. Süle", nat: "🇩🇪" }, { pos: "LB", name: "L. Raum", nat: "🇩🇪" }, { pos: "CDM", name: "A. Gündoğan", nat: "🇩🇪" }, { pos: "CM", name: "S. Goretzka", nat: "🇩🇪" }, { pos: "CAM", name: "F. Musiala", nat: "🇩🇪" }, { pos: "RW", name: "D. Sané", nat: "🇩🇪" }, { pos: "LW", name: "R. Gnabry", nat: "🇩🇪" }, { pos: "ST", name: "K. Havertz", nat: "🇩🇪" },
+        { pos: "GK", name: "B. ter Stegen", nat: "🇩🇪" }, { pos: "DEF", name: "E. Ginter", nat: "🇩🇪" }, { pos: "DEF", name: "G. Kehrer", nat: "🇩🇪" }, { pos: "MID", name: "H. Wirtz", nat: "🇩🇪" }, { pos: "MID", name: "I. Gündogan", nat: "🇩🇪" }, { pos: "FWD", name: "J. Füllkrug", nat: "🇩🇪" }, { pos: "FWD", name: "O. Adeyemi", nat: "🇩🇪" }
+    ],
+    "KS Krakovia": [
+        { pos: "GK", name: "J. Szczęsny", nat: "🇵🇱" }, { pos: "RB", name: "M. Cash", nat: "🇵🇱" }, { pos: "CB", name: "P. Bednarek", nat: "🇵🇱" }, { pos: "CB", name: "T. Kiwior", nat: "🇵🇱" }, { pos: "LB", name: "L. Zalewski", nat: "🇵🇱" }, { pos: "CDM", name: "A. Slisz", nat: "🇵🇱" }, { pos: "CM", name: "S. Zieliński", nat: "🇵🇱" }, { pos: "CAM", name: "F. Moda", nat: "🇵🇱" }, { pos: "RW", name: "D. Szymański", nat: "🇵🇱" }, { pos: "LW", name: "R. Zalewski", nat: "🇵🇱" }, { pos: "ST", name: "K. Lewandowski", nat: "🇵🇱" },
+        { pos: "GK", name: "B. Skorupski", nat: "🇵🇱" }, { pos: "DEF", name: "E. Wieteska", nat: "🇵🇱" }, { pos: "DEF", name: "G. Puchacz", nat: "🇵🇱" }, { pos: "MID", name: "H. Piotrowski", nat: "🇵🇱" }, { pos: "MID", name: "I. Frankowski", nat: "🇵🇱" }, { pos: "FWD", name: "J. Świderski", nat: "🇵🇱" }, { pos: "FWD", name: "O. Buksa", nat: "🇵🇱" }
+    ],
+    "Matterhorn FC": [
+        { pos: "GK", name: "Miguel Bañuz", nat: "🇪🇸" }, { pos: "RB", name: "Lukas Steiner", nat: "🇨🇭" }, { pos: "CB", name: "Niko Varga", nat: "🇭🇷" }, { pos: "CB", name: "Matthias Frei", nat: "🇨🇭" }, { pos: "LB", name: "Adrien Moreau", nat: "🇫🇷" }, { pos: "CDM", name: "Jonas Baumann", nat: "🇨🇭" }, { pos: "CM", name: "Milan Kovačević", nat: "🇷🇸" }, { pos: "CAM", name: "Daniel Costa", nat: "🇵🇹" }, { pos: "RW", name: "Alejandro García", nat: "🇪🇸" }, { pos: "LW", name: "Nikolaos Papadopoulos", nat: "🇬🇷" }, { pos: "ST", name: "Luka Rdekovič", nat: "🇭🇷" },
+        { pos: "GK", name: "Y. Sommer", nat: "🇨🇭" }, { pos: "DEF", name: "E. Akanji", nat: "🇨🇭" }, { pos: "DEF", name: "G. Schär", nat: "🇨🇭" }, { pos: "MID", name: "H. Xhaka", nat: "🇨🇭" }, { pos: "MID", name: "I. Freuler", nat: "🇨🇭" }, { pos: "FWD", name: "J. Embolo", nat: "🇨🇭" }, { pos: "FWD", name: "O. Vargas", nat: "🇨🇭" }
+    ],
+    "Bratislava Falcons": [
+        { pos: "GK", name: "J. Dubravka", nat: "🇸🇰" }, { pos: "RB", name: "M. Pekarík", nat: "🇸🇰" }, { pos: "CB", name: "P. Vavro", nat: "🇸🇰" }, { pos: "CB", name: "T. Škriniar", nat: "🇸🇰" }, { pos: "LB", name: "L. Hancko", nat: "🇸🇰" }, { pos: "CDM", name: "A. Lobotka", nat: "🇸🇰" }, { pos: "CM", name: "S. Kucka", nat: "🇸🇰" }, { pos: "CAM", name: "F. Duda", nat: "🇸🇰" }, { pos: "RW", name: "D. Suslov", nat: "🇸🇰" }, { pos: "LW", name: "R. Mak", nat: "🇸🇰" }, { pos: "ST", name: "K. Haraslín", nat: "🇸🇰" },
+        { pos: "GK", name: "B. Rodak", nat: "🇸🇰" }, { pos: "DEF", name: "E. Gyömbér", nat: "🇸🇰" }, { pos: "DEF", name: "G. Satka", nat: "🇸🇰" }, { pos: "MID", name: "H. Hromada", nat: "🇸🇰" }, { pos: "MID", name: "I. Benes", nat: "🇸🇰" }, { pos: "FWD", name: "J. Boženík", nat: "🇸🇰" }, { pos: "FWD", name: "O. Tupta", nat: "🇸🇰" }
+    ],
+    "FC Vaduzberg": [
+        { pos: "GK", name: "J. Büchel", nat: "🇱🇮" }, { pos: "RB", name: "M. Frick", nat: "🇱🇮" }, { pos: "CB", name: "P. Hasler", nat: "🇱🇮" }, { pos: "CB", name: "T. Malin", nat: "🇱🇮" }, { pos: "LB", name: "L. Göppel", nat: "🇱🇮" }, { pos: "CDM", name: "A. Sele", nat: "🇱🇮" }, { pos: "CM", name: "S. Wieser", nat: "🇱🇮" }, { pos: "CAM", name: "F. Wolfinger", nat: "🇱🇮" }, { pos: "RW", name: "D. Salanovic", nat: "🇱🇮" }, { pos: "LW", name: "R. Beck", nat: "🇱🇮" }, { pos: "ST", name: "K. Yildiz", nat: "🇱🇮" },
+        { pos: "GK", name: "B. Majer", nat: "🇱🇮" }, { pos: "DEF", name: "E. Rechsteiner", nat: "🇱🇮" }, { pos: "DEF", name: "G. Oehri", nat: "🇱🇮" }, { pos: "MID", name: "H. Netzer", nat: "🇱🇮" }, { pos: "MID", name: "I. Vogt", nat: "🇱🇮" }, { pos: "FWD", name: "J. Gubser", nat: "🇱🇮" }, { pos: "FWD", name: "O. Kaiser", nat: "🇱🇮" }
+    ],
+    "MSK Dunaj": [
+        { pos: "GK", name: "J. Greif", nat: "🇸🇰" }, { pos: "RB", name: "M. Tomic", nat: "🇸🇰" }, { pos: "CB", name: "P. Kacer", nat: "🇸🇰" }, { pos: "CB", name: "T. Hucko", nat: "🇸🇰" }, { pos: "LB", name: "L. Kruzliak", nat: "🇸🇰" }, { pos: "CDM", name: "A. Fasko", nat: "🇸🇰" }, { pos: "CM", name: "S. Orac", nat: "🇸🇰" }, { pos: "CAM", name: "F. Zuziak", nat: "🇸🇰" }, { pos: "RW", name: "D. Cmelik", nat: "🇸🇰" }, { pos: "LW", name: "R. Varga", nat: "🇸🇰" }, { pos: "ST", name: "K. Bari", nat: "🇸🇰" },
+        { pos: "GK", name: "B. Sulla", nat: "🇸🇰" }, { pos: "DEF", name: "E. Kasan", nat: "🇸🇰" }, { pos: "DEF", name: "G. Pastva", nat: "🇸🇰" }, { pos: "MID", name: "H. Kral", nat: "🇸🇰" }, { pos: "MID", name: "I. Sulek", nat: "🇸🇰" }, { pos: "FWD", name: "J. Kucka", nat: "🇸🇰" }, { pos: "FWD", name: "O. Pavlik", nat: "🇸🇰" }
+    ],
+    "Grazer Sturmfeld": [
+        { pos: "GK", name: "J. Lindner", nat: "🇦🇹" }, { pos: "RB", name: "M. Posch", nat: "🇦🇹" }, { pos: "CB", name: "P. Lienhart", nat: "🇦🇹" }, { pos: "CB", name: "T. Danso", nat: "🇦🇹" }, { pos: "LB", name: "L. Alaba", nat: "🇦🇹" }, { pos: "CDM", name: "A. Schlager", nat: "🇦🇹" }, { pos: "CM", name: "S. Laimer", nat: "🇦🇹" }, { pos: "CAM", name: "F. Grillitsch", nat: "🇦🇹" }, { pos: "RW", name: "D. Schaub", nat: "🇦🇹" }, { pos: "LW", name: "R. Kainz", nat: "🇦🇹" }, { pos: "ST", name: "K. Gregoritsch", nat: "🇦🇹" },
+        { pos: "GK", name: "B. Pentz", nat: "🇦🇹" }, { pos: "DEF", name: "E. Wöber", nat: "🇦🇹" }, { pos: "DEF", name: "G. Bauer", nat: "🇦🇹" }, { pos: "MID", name: "H. Baumgartner", nat: "🇦🇹" }, { pos: "MID", name: "I. Seiwald", nat: "🇦🇹" }, { pos: "FWD", name: "J. Arnautovic", nat: "🇦🇹" }, { pos: "FWD", name: "O. Onisiwo", nat: "🇦🇹" }
+    ],
+    "VfB Eisenstadt": [
+        { pos: "GK", name: "J. Trapp", nat: "🇩🇪" }, { pos: "RB", name: "M. Henrichs", nat: "🇩🇪" }, { pos: "CB", name: "P. Tah", nat: "🇩🇪" }, { pos: "CB", name: "T. Schlotterbeck", nat: "🇩🇪" }, { pos: "LB", name: "L. Gosens", nat: "🇩🇪" }, { pos: "CDM", name: "A. Andrich", nat: "🇩🇪" }, { pos: "CM", name: "S. Groß", nat: "🇩🇪" }, { pos: "CAM", name: "F. Havertz", nat: "🇩🇪" }, { pos: "RW", name: "D. Raum", nat: "🇩🇪" }, { pos: "LW", name: "R. Führich", nat: "🇩🇪" }, { pos: "ST", name: "K. Undav", nat: "🇩🇪" },
+        { pos: "GK", name: "B. Leno", nat: "🇩🇪" }, { pos: "DEF", name: "E. Koch", nat: "🇩🇪" }, { pos: "DEF", name: "G. Mittelstädt", nat: "🇩🇪" }, { pos: "MID", name: "H. Prömel", nat: "🇩🇪" }, { pos: "MID", name: "I. Stiller", nat: "🇩🇪" }, { pos: "FWD", name: "J. Behrens", nat: "🇩🇪" }, { pos: "FWD", name: "O. Dinkci", nat: "🇩🇪" }
+    ],
+    "FC Alpenbruck": [
+        { pos: "GK", name: "J. Pentz", nat: "🇦🇹" }, { pos: "RB", name: "M. Dragovic", nat: "🇦🇹" }, { pos: "CB", name: "P. Lainer", nat: "🇦🇹" }, { pos: "CB", name: "T. Trimmel", nat: "🇦🇹" }, { pos: "LB", name: "L. Ulmer", nat: "🇦🇹" }, { pos: "CDM", name: "A. Ilsanker", nat: "🇦🇹" }, { pos: "CM", name: "S. Hierländer", nat: "🇦🇹" }, { pos: "CAM", name: "F. Kainz", nat: "🇦🇹" }, { pos: "RW", name: "D. Ljubicic", nat: "🇦🇹" }, { pos: "LW", name: "R. Schmid", nat: "🇦🇹" }, { pos: "ST", name: "K. Friesenbichler", nat: "🇦🇹" },
+        { pos: "GK", name: "B. Stankovic", nat: "🇦🇹" }, { pos: "DEF", name: "E. Aiwu", nat: "🇦🇹" }, { pos: "DEF", name: "G. Wimmer", nat: "🇦🇹" }, { pos: "MID", name: "H. Kerschbaumer", nat: "🇦🇹" }, { pos: "MID", name: "I. Zulj", nat: "🇦🇹" }, { pos: "FWD", name: "J. Monschein", nat: "🇦🇹" }, { pos: "FWD", name: "O. Gruber", nat: "🇦🇹" }
+    ],
+    "FC Moravsky": [
+        { pos: "GK", name: "J. Pavlenka", nat: "🇨🇿" }, { pos: "RB", name: "M. Vlček", nat: "🇨🇿" }, { pos: "CB", name: "P. Kadeřábek", nat: "🇨🇿" }, { pos: "CB", name: "T. Petrášek", nat: "🇨🇿" }, { pos: "LB", name: "L. Hovorka", nat: "🇨🇿" }, { pos: "CDM", name: "A. Zahustel", nat: "🇨🇿" }, { pos: "CM", name: "S. Hubník", nat: "🇨🇿" }, { pos: "CAM", name: "F. Plašil", nat: "🇨🇿" }, { pos: "RW", name: "D. Kopic", nat: "🇨🇿" }, { pos: "LW", name: "R. Pilař", nat: "🇨🇿" }, { pos: "ST", name: "K. Krmenčík", nat: "🇨🇿" },
+        { pos: "GK", name: "B. Koubek", nat: "🇨🇿" }, { pos: "DEF", name: "E. Hejda", nat: "🇨🇿" }, { pos: "DEF", name: "G. Suchý", nat: "🇨🇿" }, { pos: "MID", name: "H. Hušbauer", nat: "🇨🇿" }, { pos: "MID", name: "I. Čermák", nat: "🇨🇿" }, { pos: "FWD", name: "J. Beauguel", nat: "🇨🇿" }, { pos: "FWD", name: "O. Šašinka", nat: "🇨🇿" }
+    ],
+    "FC Kronenburg": [
+        { pos: "GK", name: "J. Blaswich", nat: "🇩🇪" }, { pos: "RB", name: "M. Raum", nat: "🇩🇪" }, { pos: "CB", name: "P. Orban", nat: "🇩🇪" }, { pos: "CB", name: "T. Lukeba", nat: "🇩🇪" }, { pos: "LB", name: "L. Klostermann", nat: "🇩🇪" }, { pos: "CDM", name: "A. Haidara", nat: "🇩🇪" }, { pos: "CM", name: "S. Kampl", nat: "🇩🇪" }, { pos: "CAM", name: "F. Baumgartner", nat: "🇩🇪" }, { pos: "RW", name: "D. Openda", nat: "🇩🇪" }, { pos: "LW", name: "R. Šeško", nat: "🇩🇪" }, { pos: "ST", name: "K. Poulsen", nat: "🇩🇪" },
+        { pos: "GK", name: "B. Gulacsi", nat: "🇩🇪" }, { pos: "DEF", name: "E. Simakan", nat: "🇩🇪" }, { pos: "DEF", name: "G. Henrichs", nat: "🇩🇪" }, { pos: "MID", name: "H. Simons", nat: "🇩🇪" }, { pos: "MID", name: "I. Elmas", nat: "🇩🇪" }, { pos: "FWD", name: "J. Silva", nat: "🇩🇪" }, { pos: "FWD", name: "O. Werner", nat: "🇩🇪" }
+    ],
+    "NK Triglav": [
+        { pos: "GK", name: "J. Belec", nat: "🇸🇮" }, { pos: "RB", name: "M. Stojanović", nat: "🇸🇮" }, { pos: "CB", name: "P. Jovanović", nat: "🇸🇮" }, { pos: "CB", name: "T. Blazic", nat: "🇸🇮" }, { pos: "LB", name: "L. Krhin", nat: "🇸🇮" }, { pos: "CDM", name: "A. Vrhovec", nat: "🇸🇮" }, { pos: "CM", name: "S. Brekalo", nat: "🇸🇮" }, { pos: "CAM", name: "F. Zajc", nat: "🇸🇮" }, { pos: "RW", name: "D. Lah", nat: "🇸🇮" }, { pos: "LW", name: "R. Kronaveter", nat: "🇸🇮" }, { pos: "ST", name: "K. Vuković", nat: "🇸🇮" },
+        { pos: "GK", name: "B. Frelih", nat: "🇸🇮" }, { pos: "DEF", name: "E. Sikošek", nat: "🇸🇮" }, { pos: "DEF", name: "G. Tijanic", nat: "🇸🇮" }, { pos: "MID", name: "H. Horvat", nat: "🇸🇮" }, { pos: "MID", name: "I. Zorko", nat: "🇸🇮" }, { pos: "FWD", name: "J. Zadnik", nat: "🇸🇮" }, { pos: "FWD", name: "O. Jovanovic", nat: "🇸🇮" }
+    ],
+    "Slavia Hradec": [
+        { pos: "GK", name: "J. Kolar", nat: "🇨🇿" }, { pos: "RB", name: "M. Dorley", nat: "🇨🇿" }, { pos: "CB", name: "P. Holes", nat: "🇨🇿" }, { pos: "CB", name: "T. Vlcek", nat: "🇨🇿" }, { pos: "LB", name: "L. Boril", nat: "🇨🇿" }, { pos: "CDM", name: "A. Holes", nat: "🇨🇿" }, { pos: "CM", name: "S. Kral", nat: "🇨🇿" }, { pos: "CAM", name: "F. Vacha", nat: "🇨🇿" }, { pos: "RW", name: "D. Zafeiris", nat: "🇨🇿" }, { pos: "LW", name: "R. Provod", nat: "🇨🇿" }, { pos: "ST", name: "K. Jurecka", nat: "🇨🇿" },
+        { pos: "GK", name: "B. Mandous", nat: "🇨🇿" }, { pos: "DEF", name: "E. Ousou", nat: "🇨🇿" }, { pos: "DEF", name: "G. Kacharaba", nat: "🇨🇿" }, { pos: "MID", name: "H. Masopust", nat: "🇨🇿" }, { pos: "MID", name: "I. Traore", nat: "🇨🇿" }, { pos: "FWD", name: "J. Chytil", nat: "🇨🇿" }, { pos: "FWD", name: "O. Lingr", nat: "🇨🇿" }
+    ],
+    "FC Drava": [
+        { pos: "GK", name: "J. Gorenc", nat: "🇸🇮" }, { pos: "RB", name: "M. Rodic", nat: "🇸🇮" }, { pos: "CB", name: "P. Rogelj", nat: "🇸🇮" }, { pos: "CB", name: "T. Petek", nat: "🇸🇮" }, { pos: "LB", name: "L. Krajnc", nat: "🇸🇮" }, { pos: "CDM", name: "A. Repas", nat: "🇸🇮" }, { pos: "CM", name: "S. Vrhovac", nat: "🇸🇮" }, { pos: "CAM", name: "F. Bozickovic", nat: "🇸🇮" }, { pos: "RW", name: "D. Skrbic", nat: "🇸🇮" }, { pos: "LW", name: "R. Ivačič", nat: "🇸🇮" }, { pos: "ST", name: "K. Sporar", nat: "🇸🇮" },
+        { pos: "GK", name: "B. Sorcan", nat: "🇸🇮" }, { pos: "DEF", name: "E. Ristovski", nat: "🇸🇮" }, { pos: "DEF", name: "G. Kolmanic", nat: "🇸🇮" }, { pos: "MID", name: "H. Rovsek", nat: "🇸🇮" }, { pos: "MID", name: "I. Seslar", nat: "🇸🇮" }, { pos: "FWD", name: "J. Matko", nat: "🇸🇮" }, { pos: "FWD", name: "O. Milic", nat: "🇸🇮" }
+    ],
+    "Kosice Dynamo": [
+        { pos: "GK", name: "J. Bajza", nat: "🇸🇰" }, { pos: "RB", name: "M. Krajnik", nat: "🇸🇰" }, { pos: "CB", name: "P. Mudra", nat: "🇸🇰" }, { pos: "CB", name: "T. Kral", nat: "🇸🇰" }, { pos: "LB", name: "L. Kruzliak", nat: "🇸🇰" }, { pos: "CDM", name: "A. Gembicky", nat: "🇸🇰" }, { pos: "CM", name: "S. Zsigmund", nat: "🇸🇰" }, { pos: "CAM", name: "F. Fasko", nat: "🇸🇰" }, { pos: "RW", name: "D. Surnovsky", nat: "🇸🇰" }, { pos: "LW", name: "R. Glisic", nat: "🇸🇰" }, { pos: "ST", name: "K. Hrnciar", nat: "🇸🇰" },
+        { pos: "GK", name: "B. Petrak", nat: "🇸🇰" }, { pos: "DEF", name: "E. Carrillo", nat: "🇸🇰" }, { pos: "DEF", name: "G. Jacko", nat: "🇸🇰" }, { pos: "MID", name: "H. Krivak", nat: "🇸🇰" }, { pos: "MID", name: "I. Goljan", nat: "🇸🇰" }, { pos: "FWD", name: "J. Medved", nat: "🇸🇰" }, { pos: "FWD", name: "O. Volesak", nat: "🇸🇰" }
+    ],
+    "SV Rheinwald": [
+        { pos: "GK", name: "J. Riemann", nat: "🇩🇪" }, { pos: "RB", name: "M. Gamboa", nat: "🇩🇪" }, { pos: "CB", name: "P. Loosli", nat: "🇩🇪" }, { pos: "CB", name: "T. Bernardo", nat: "🇩🇪" }, { pos: "LB", name: "L. Soares", nat: "🇩🇪" }, { pos: "CDM", name: "A. Losilla", nat: "🇩🇪" }, { pos: "CM", name: "S. Osterhage", nat: "🇩🇪" }, { pos: "CAM", name: "F. Daschner", nat: "🇩🇪" }, { pos: "RW", name: "D. Asano", nat: "🇩🇪" }, { pos: "LW", name: "R. Holtmann", nat: "🇩🇪" }, { pos: "ST", name: "K. Hofmann", nat: "🇩🇪" },
+        { pos: "GK", name: "B. Luthe", nat: "🇩🇪" }, { pos: "DEF", name: "E. Masovic", nat: "🇩🇪" }, { pos: "DEF", name: "G. Tolba", nat: "🇩🇪" }, { pos: "MID", name: "H. Förster", nat: "🇩🇪" }, { pos: "MID", name: "I. Kwarteng", nat: "🇩🇪" }, { pos: "FWD", name: "J. Broschinski", nat: "🇩🇪" }, { pos: "FWD", name: "O. Boadu", nat: "🇩🇪" }
+    ],
+    "Pecs Vihar": [
+        { pos: "GK", name: "J. Dibusz", nat: "🇭🇺" }, { pos: "RB", name: "M. Fiola", nat: "🇭🇺" }, { pos: "CB", name: "P. Szappanos", nat: "🇭🇺" }, { pos: "CB", name: "T. Lang", nat: "🇭🇺" }, { pos: "LB", name: "L. Nego", nat: "🇭🇺" }, { pos: "CDM", name: "A. Nagy", nat: "🇭🇺" }, { pos: "CM", name: "S. Schäfer", nat: "🇭🇺" }, { pos: "CAM", name: "F. Kalmár", nat: "🇭🇺" }, { pos: "RW", name: "D. Sallai", nat: "🇭🇺" }, { pos: "LW", name: "R. Varga", nat: "🇭🇺" }, { pos: "ST", name: "K. Ádám", nat: "🇭🇺" },
+        { pos: "GK", name: "B. Gulacsi", nat: "🇭🇺" }, { pos: "DEF", name: "E. Botka", nat: "🇭🇺" }, { pos: "DEF", name: "G. Szalai", nat: "🇭🇺" }, { pos: "MID", name: "H. Styles", nat: "🇭🇺" }, { pos: "MID", name: "I. Kerkez", nat: "🇭🇺" }, { pos: "FWD", name: "J. Sallai", nat: "🇭🇺" }, { pos: "FWD", name: "O. Németh", nat: "🇭🇺" }
+    ],
+    "Rhein Lions": [
+        { pos: "GK", name: "J. Kobel", nat: "🇱🇮" }, { pos: "RB", name: "M. Widmer", nat: "🇱🇮" }, { pos: "CB", name: "P. Elvedi", nat: "🇱🇮" }, { pos: "CB", name: "T. Aebischer", nat: "🇱🇮" }, { pos: "LB", name: "L. Rodriguez", nat: "🇱🇮" }, { pos: "CDM", name: "A. Zakaria", nat: "🇱🇮" }, { pos: "CM", name: "S. Sow", nat: "🇱🇮" }, { pos: "CAM", name: "F. Rieder", nat: "🇱🇮" }, { pos: "RW", name: "D. Ndoye", nat: "🇱🇮" }, { pos: "LW", name: "R. Vargas", nat: "🇱🇮" }, { pos: "ST", name: "K. Amdouni", nat: "🇱🇮" },
+        { pos: "GK", name: "B. Mvogo", nat: "🇱🇮" }, { pos: "DEF", name: "E. Comert", nat: "🇱🇮" }, { pos: "DEF", name: "G. Lotomba", nat: "🇱🇮" }, { pos: "MID", name: "H. Aebischer", nat: "🇱🇮" }, { pos: "MID", name: "I. Bislimi", nat: "🇱🇮" }, { pos: "FWD", name: "J. Zuber", nat: "🇱🇮" }, { pos: "FWD", name: "O. Itten", nat: "🇱🇮" }
+    ],
+    "FC Alpenstern": [
+        { pos: "GK", name: "J. Mvogo", nat: "🇱🇮" }, { pos: "RB", name: "M. Schwegler", nat: "🇱🇮" }, { pos: "CB", name: "P. Klose", nat: "🇱🇮" }, { pos: "CB", name: "T. Omlin", nat: "🇱🇮" }, { pos: "LB", name: "L. Benito", nat: "🇱🇮" }, { pos: "CDM", name: "A. Jankewitz", nat: "🇱🇮" }, { pos: "CM", name: "S. Janko", nat: "🇱🇮" }, { pos: "CAM", name: "F. Ugrinic", nat: "🇱🇮" }, { pos: "RW", name: "D. Sow", nat: "🇱🇮" }, { pos: "LW", name: "R. Steffen", nat: "🇱🇮" }, { pos: "ST", name: "K. Embolo", nat: "🇱🇮" },
+        { pos: "GK", name: "B. Von Ballmoos", nat: "🇱🇮" }, { pos: "DEF", name: "E. Lauper", nat: "🇱🇮" }, { pos: "DEF", name: "G. Zesiger", nat: "🇱🇮" }, { pos: "MID", name: "H. Fassnacht", nat: "🇱🇮" }, { pos: "MID", name: "I. Xhaka", nat: "🇱🇮" }, { pos: "FWD", name: "J. Monteiro", nat: "🇱🇮" }, { pos: "FWD", name: "O. Okafor", nat: "🇱🇮" }
+    ],
+    "FC Tatran": [
+        { pos: "GK", name: "J. Semrinec", nat: "🇸🇰" }, { pos: "RB", name: "M. Simcak", nat: "🇸🇰" }, { pos: "CB", name: "P. Mic", nat: "🇸🇰" }, { pos: "CB", name: "T. Dzuris", nat: "🇸🇰" }, { pos: "LB", name: "L. Marcin", nat: "🇸🇰" }, { pos: "CDM", name: "A. Kulikov", nat: "🇸🇰" }, { pos: "CM", name: "S. Sulak", nat: "🇸🇰" }, { pos: "CAM", name: "F. Herc", nat: "🇸🇰" }, { pos: "RW", name: "D. Koval", nat: "🇸🇰" }, { pos: "LW", name: "R. Bartos", nat: "🇸🇰" }, { pos: "ST", name: "K. Durica", nat: "🇸🇰" },
+        { pos: "GK", name: "B. Pindroch", nat: "🇸🇰" }, { pos: "DEF", name: "E. Dzogan", nat: "🇸🇰" }, { pos: "DEF", name: "G. Sokol", nat: "🇸🇰" }, { pos: "MID", name: "H. Kocis", nat: "🇸🇰" }, { pos: "MID", name: "I. Bilovsky", nat: "🇸🇰" }, { pos: "FWD", name: "J. Mikus", nat: "🇸🇰" }, { pos: "FWD", name: "O. Zubak", nat: "🇸🇰" }
+    ],
+    "Budapest Korona": [
+        { pos: "GK", name: "J. Szappanos", nat: "🇭🇺" }, { pos: "RB", name: "M. Botka", nat: "🇭🇺" }, { pos: "CB", name: "P. Wingo", nat: "🇭🇺" }, { pos: "CB", name: "T. Csoboth", nat: "🇭🇺" }, { pos: "LB", name: "L. Bolla", nat: "🇭🇺" }, { pos: "CDM", name: "A. Kata", nat: "🇭🇺" }, { pos: "CM", name: "S. Vécsei", nat: "🇭🇺" }, { pos: "CAM", name: "F. Bese", nat: "🇭🇺" }, { pos: "RW", name: "D. Zivzivadze", nat: "🇭🇺" }, { pos: "LW", name: "R. Gruber", nat: "🇭🇺" }, { pos: "ST", name: "K. Barnabás", nat: "🇭🇺" },
+        { pos: "GK", name: "B. Toth", nat: "🇭🇺" }, { pos: "DEF", name: "E. Mocsi", nat: "🇭🇺" }, { pos: "DEF", name: "G. Szalai", nat: "🇭🇺" }, { pos: "MID", name: "H. Gera", nat: "🇭🇺" }, { pos: "MID", name: "I. Csongvai", nat: "🇭🇺" }, { pos: "FWD", name: "J. Varga", nat: "🇭🇺" }, { pos: "FWD", name: "O. Skribek", nat: "🇭🇺" }
+    ],
+    "Vienna Adler": [
+        { pos: "GK", name: "J. Stankovic", nat: "🇦🇹" }, { pos: "RB", name: "M. Kvasina", nat: "🇦🇹" }, { pos: "CB", name: "P. Wimmer", nat: "🇦🇹" }, { pos: "CB", name: "T. Mahrer", nat: "🇦🇹" }, { pos: "LB", name: "L. Baltaxa", nat: "🇦🇹" }, { pos: "CDM", name: "A. Grunwald", nat: "🇦🇹" }, { pos: "CM", name: "S. Fitz", nat: "🇦🇹" }, { pos: "CAM", name: "F. Demir", nat: "🇦🇹" }, { pos: "RW", name: "D. Fischer", nat: "🇦🇹" }, { pos: "LW", name: "R. Keles", nat: "🇦🇹" }, { pos: "ST", name: "K. Monschein", nat: "🇦🇹" },
+        { pos: "GK", name: "B. Sahin-Radlinger", nat: "🇦🇹" }, { pos: "DEF", name: "E. Handl", nat: "🇦🇹" }, { pos: "DEF", name: "G. Dovedan", nat: "🇦🇹" }, { pos: "MID", name: "H. Martschinko", nat: "🇦🇹" }, { pos: "MID", name: "I. Ebner", nat: "🇦🇹" }, { pos: "FWD", name: "J. Huskovic", nat: "🇦🇹" }, { pos: "FWD", name: "O. Tabakovic", nat: "🇦🇹" }
+    ],
+    "SV Eisenwald": [
+        { pos: "GK", name: "J. Lukse", nat: "🇦🇹" }, { pos: "RB", name: "M. Huber", nat: "🇦🇹" }, { pos: "CB", name: "P. Nemeth", nat: "🇦🇹" }, { pos: "CB", name: "T. Lackner", nat: "🇦🇹" }, { pos: "LB", name: "L. Gugganig", nat: "🇦🇹" }, { pos: "CDM", name: "A. Zulj", nat: "🇦🇹" }, { pos: "CM", name: "S. Rakowitz", nat: "🇦🇹" }, { pos: "CAM", name: "F. Riedl", nat: "🇦🇹" }, { pos: "RW", name: "D. Atanga", nat: "🇦🇹" }, { pos: "LW", name: "R. Ljubic", nat: "🇦🇹" }, { pos: "ST", name: "K. Jager", nat: "🇦🇹" },
+        { pos: "GK", name: "B. Sallinger", nat: "🇦🇹" }, { pos: "DEF", name: "E. Ostrzolek", nat: "🇦🇹" }, { pos: "DEF", name: "G. Brugger", nat: "🇦🇹" }, { pos: "MID", name: "H. Klem", nat: "🇦🇹" }, { pos: "MID", name: "I. Zubak", nat: "🇦🇹" }, { pos: "FWD", name: "J. Vucic", nat: "🇦🇹" }, { pos: "FWD", name: "O. Aydin", nat: "🇦🇹" }
+    ],
+    "Debrecen Vasas": [
+        { pos: "GK", name: "J. Moga", nat: "🇭🇺" }, { pos: "RB", name: "M. Ferenczi", nat: "🇭🇺" }, { pos: "CB", name: "P. Barath", nat: "🇭🇺" }, { pos: "CB", name: "T. Papp", nat: "🇭🇺" }, { pos: "LB", name: "L. Bodi", nat: "🇭🇺" }, { pos: "CDM", name: "A. Fodor", nat: "🇭🇺" }, { pos: "CM", name: "S. Loncar", nat: "🇭🇺" }, { pos: "CAM", name: "F. Feczesin", nat: "🇭🇺" }, { pos: "RW", name: "D. Bodi", nat: "🇭🇺" }, { pos: "LW", name: "R. Kundrak", nat: "🇭🇺" }, { pos: "ST", name: "K. Varga", nat: "🇭🇺" },
+        { pos: "GK", name: "B. Nadady", nat: "🇭🇺" }, { pos: "DEF", name: "E. Kusnyir", nat: "🇭🇺" }, { pos: "DEF", name: "G. Bodi", nat: "🇭🇺" }, { pos: "MID", name: "H. Bényei", nat: "🇭🇺" }, { pos: "MID", name: "I. Dzsudzsák", nat: "🇭🇺" }, { pos: "FWD", name: "J. Kinyik", nat: "🇭🇺" }, { pos: "FWD", name: "O. Sós", nat: "🇭🇺" }
+    ],
+    "Gornik Bialystok": [
+        { pos: "GK", name: "J. Dragowski", nat: "🇵🇱" }, { pos: "RB", name: "M. Kedziora", nat: "🇵🇱" }, { pos: "CB", name: "P. Dawidowicz", nat: "🇵🇱" }, { pos: "CB", name: "T. Salamon", nat: "🇵🇱" }, { pos: "LB", name: "L. Puchacz", nat: "🇵🇱" }, { pos: "CDM", name: "A. Dziedziczak", nat: "🇵🇱" }, { pos: "CM", name: "S. Slisz", nat: "🇵🇱" }, { pos: "CAM", name: "F. Marchwinski", nat: "🇵🇱" }, { pos: "RW", name: "D. Grosicki", nat: "🇵🇱" }, { pos: "LW", name: "R. Skoras", nat: "🇵🇱" }, { pos: "ST", name: "K. Swiderski", nat: "🇵🇱" },
+        { pos: "GK", name: "B. Grabara", nat: "🇵🇱" }, { pos: "DEF", name: "E. Bochniewicz", nat: "🇵🇱" }, { pos: "DEF", name: "G. Peda", nat: "🇵🇱" }, { pos: "MID", name: "H. Krychowiak", nat: "🇵🇱" }, { pos: "MID", name: "I. Linetty", nat: "🇵🇱" }, { pos: "FWD", name: "J. Buksa", nat: "🇵🇱" }, { pos: "FWD", name: "O. Musialowski", nat: "🇵🇱" }
+    ],
+    "FC Danubia": [
+        { pos: "GK", name: "J. Hegedus", nat: "🇭🇺" }, { pos: "RB", name: "M. Meszaros", nat: "🇭🇺" }, { pos: "CB", name: "P. Szucs", nat: "🇭🇺" }, { pos: "CB", name: "T. Toth", nat: "🇭🇺" }, { pos: "LB", name: "L. Nagy", nat: "🇭🇺" }, { pos: "CDM", name: "A. Kovacs", nat: "🇭🇺" }, { pos: "CM", name: "S. Horvath", nat: "🇭🇺" }, { pos: "CAM", name: "F. Varga", nat: "🇭🇺" }, { pos: "RW", name: "D. Molnar", nat: "🇭🇺" }, { pos: "LW", name: "R. Balogh", nat: "🇭🇺" }, { pos: "ST", name: "K. Farkas", nat: "🇭🇺" },
+        { pos: "GK", name: "B. Szappanos", nat: "🇭🇺" }, { pos: "DEF", name: "E. Lakatos", nat: "🇭🇺" }, { pos: "DEF", name: "G. Takacs", nat: "🇭🇺" }, { pos: "MID", name: "H. Kiss", nat: "🇭🇺" }, { pos: "MID", name: "I. Nemeth", nat: "🇭🇺" }, { pos: "FWD", name: "J. Simon", nat: "🇭🇺" }, { pos: "FWD", name: "O. Orban", nat: "🇭🇺" }
+    ],
+    "Warsaw Legion": [
+        { pos: "GK", name: "J. Szczesny", nat: "🇵🇱" }, { pos: "RB", name: "M. Bereszynski", nat: "🇵🇱" }, { pos: "CB", name: "P. Glik", nat: "🇵🇱" }, { pos: "CB", name: "T. Jedrzejczyk", nat: "🇵🇱" }, { pos: "LB", name: "L. Reca", nat: "🇵🇱" }, { pos: "CDM", name: "A. Goralski", nat: "🇵🇱" }, { pos: "CM", name: "S. Zielinski", nat: "🇵🇱" }, { pos: "CAM", name: "F. Josue", nat: "🇵🇱" }, { pos: "RW", name: "D. Kownacki", nat: "🇵🇱" }, { pos: "LW", name: "R. Skoras", nat: "🇵🇱" }, { pos: "ST", name: "K. Pekhart", nat: "🇵🇱" },
+        { pos: "GK", name: "B. Mrozek", nat: "🇵🇱" }, { pos: "DEF", name: "E. Wieteska", nat: "🇵🇱" }, { pos: "DEF", name: "G. Jedrzejczyk", nat: "🇵🇱" }, { pos: "MID", name: "H. Kapustka", nat: "🇵🇱" }, { pos: "MID", name: "I. Slisz", nat: "🇵🇱" }, { pos: "FWD", name: "J. Kramarz", nat: "🇵🇱" }, { pos: "FWD", name: "O. Rosolek", nat: "🇵🇱" }
+    ],
+    "FC Wislania": [
+        { pos: "GK", name: "J. Grabara", nat: "🇵🇱" }, { pos: "RB", name: "M. Fraczczak", nat: "🇵🇱" }, { pos: "CB", name: "P. Bochniewicz", nat: "🇵🇱" }, { pos: "CB", name: "T. Kedziora", nat: "🇵🇱" }, { pos: "LB", name: "L. Kun", nat: "🇵🇱" }, { pos: "CDM", name: "A. Chodyna", nat: "🇵🇱" }, { pos: "CM", name: "S. Kozlowski", nat: "🇵🇱" }, { pos: "CAM", name: "F. Bielik", nat: "🇵🇱" }, { pos: "RW", name: "D. Szymanski", nat: "🇵🇱" }, { pos: "LW", name: "R. Zalewski", nat: "🇵🇱" }, { pos: "ST", name: "K. Buksa", nat: "🇵🇱" },
+        { pos: "GK", name: "B. Klebaniuk", nat: "🇵🇱" }, { pos: "DEF", name: "E. Grzybek", nat: "🇵🇱" }, { pos: "DEF", name: "G. Jaroch", nat: "🇵🇱" }, { pos: "MID", name: "H. Murawski", nat: "🇵🇱" }, { pos: "MID", name: "I. Cywinski", nat: "🇵🇱" }, { pos: "FWD", name: "J. Stepien", nat: "🇵🇱" }, { pos: "FWD", name: "O. Zrelak", nat: "🇵🇱" }
+    ]
+};
 
 let activeStatCategory = 'goals';
 let homeSig = '';
@@ -1235,46 +1352,10 @@ const BASE_CLUBS = [
   { flag:"🇵🇱", country:"Poland",        name:"FC Wislania",         w:1, d:0, l:9, gf:7, ga:28 }
 ];
 
-function generateSquad(teamName, teamCountry) {
-    if (teamName === 'Matterhorn FC') {
-        const squad = [...MATTERHORN_STARTING_XI];
-        const benchDist = ["GK", "DEF", "DEF", "MID", "MID", "FWD", "FWD"];
-        benchDist.forEach((pos, i) => {
-            const rng = mulberry32(hashString(teamName + "_bench_" + i));
-            let nat = teamCountry;
-            if (rng() > 0.5) nat = Object.keys(FLAG_SVG)[Math.floor(rng() * Object.keys(FLAG_SVG).length)];
-            const name = `${FIRST_NAMES[Math.floor(rng() * FIRST_NAMES.length)]} ${LAST_NAMES[Math.floor(rng() * LAST_NAMES.length)]}`;
-            squad.push({ name, nat, pos });
-        });
-        return squad;
-    }
-
-    const squad = [];
-    const posDist = ["GK", "DEF", "DEF", "DEF", "DEF", "MID", "MID", "MID", "FWD", "FWD", "FWD"];
-    posDist.forEach((pos, i) => {
-        const rng = mulberry32(hashString(teamName + "_start_" + i));
-        let nat = teamCountry;
-        if (rng() > 0.6) nat = Object.keys(FLAG_SVG)[Math.floor(rng() * Object.keys(FLAG_SVG).length)];
-        const name = `${FIRST_NAMES[Math.floor(rng() * FIRST_NAMES.length)]} ${LAST_NAMES[Math.floor(rng() * LAST_NAMES.length)]}`;
-        squad.push({ name, nat, pos });
-    });
-
-    const benchDist = ["GK", "DEF", "DEF", "MID", "MID", "FWD", "FWD"];
-    benchDist.forEach((pos, i) => {
-        const rng = mulberry32(hashString(teamName + "_bench_" + i));
-        let nat = teamCountry;
-        if (rng() > 0.5) nat = Object.keys(FLAG_SVG)[Math.floor(rng() * Object.keys(FLAG_SVG).length)];
-        const name = `${FIRST_NAMES[Math.floor(rng() * FIRST_NAMES.length)]} ${LAST_NAMES[Math.floor(rng() * LAST_NAMES.length)]}`;
-        squad.push({ name, nat, pos });
-    });
-
-    return squad;
-}
-
 // Generate ALL squads ONCE to ensure absolute consistency
 const ALL_SQUADS = {};
 BASE_CLUBS.forEach(club => {
-    ALL_SQUADS[club.name] = generateSquad(club.name, club.flag);
+    ALL_SQUADS[club.name] = BUILT_IN_SQUADS[club.name];
 });
 
 // Helper for delays
@@ -1694,7 +1775,7 @@ function calculateSquadStats(teamName) {
             let r = rng();
             if (r < 0.5) scorerIdx = 8 + Math.floor(rng() * 3); // FWD
             else if (r < 0.8) scorerIdx = 5 + Math.floor(rng() * 3); // MID
-            else scorerIdx = Math.floor(rng() * 5); // DEF/GK
+            else scorerIdx = 1 + Math.floor(rng() * 4); // DEF (Goalkeeper strictly excluded)
             
             squad[scorerIdx].goals++;
             
