@@ -1909,31 +1909,51 @@ function renderHome() {
     const table = buildTable();
     const now = Date.now();
     
-    // 1. Featured Match
-    const upcomingMatch = MATCH_SCHEDULE.find(m => getLiveState(m, now).phase === 'upcoming');
-    const badge = document.getElementById('fBadge');
+    // 1. Featured Match (Prioritize Live)
+    let featuredMatch = MATCH_SCHEDULE.find(m => {
+        const phase = getLiveState(m, now).phase;
+        return phase === '1H' || phase === '2H' || phase === 'HT';
+    });
+    if (!featuredMatch) {
+        featuredMatch = MATCH_SCHEDULE.find(m => getLiveState(m, now).phase === 'upcoming');
+    }
     
-    if (upcomingMatch) {
-        const d = new Date(upcomingMatch.startTime);
-        badge.textContent = `Matchday ${upcomingMatch.matchday} · Featured Match`;
-        document.getElementById('fTitle').textContent = `${upcomingMatch.homeTeam} vs ${upcomingMatch.awayTeam}`;
-        document.getElementById('fSub').textContent = `${d.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })} · ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-        document.getElementById('fTeams').innerHTML = `${crest(upcomingMatch.homeTeam, 'lg')} <span>${upcomingMatch.homeTeam}</span> <span class="f-vs">VS</span> <span>${upcomingMatch.awayTeam}</span> ${crest(upcomingMatch.awayTeam, 'lg')}`;
-    } else {
-        const finished = MATCH_SCHEDULE
-            .filter(m => getLiveState(m, now).phase === 'FT')
-            .map(m => {
-                const state = getLiveState(m, now);
-                const score = calculateScore(m, state.currentM);
-                return { home: m.homeTeam, homeScore: score.home, away: m.awayTeam, awayScore: score.away, date: m.startTime };
-            });
+    const badge = document.getElementById('fBadge');
+    if (featuredMatch) {
+        const state = getLiveState(featuredMatch, now);
+        const d = new Date(featuredMatch.startTime);
         
+        if (state.phase === '1H' || state.phase === '2H' || state.phase === 'HT') {
+            badge.textContent = `Matchday ${featuredMatch.matchday} · Live Now`;
+            document.getElementById('fSub').innerHTML = `<span id="featured-clock">Loading clock...</span>`;
+        } else {
+            badge.textContent = `Matchday ${featuredMatch.matchday} · Featured Match`;
+            document.getElementById('fSub').textContent = `${d.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })} · ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        }
+        
+        document.getElementById('fTitle').textContent = `${featuredMatch.homeTeam} vs ${featuredMatch.awayTeam}`;
+        document.getElementById('fTeams').innerHTML = `${crest(featuredMatch.homeTeam, 'lg')} <span>${featuredMatch.homeTeam}</span> <span class="f-vs">VS</span> <span>${featuredMatch.awayTeam}</span> ${crest(featuredMatch.awayTeam, 'lg')}`;
+        
+        const featuredClock = document.getElementById('featured-clock');
+        if (featuredClock) {
+            let clockText = '';
+            if (state.phase === '1H') {
+                clockText = state.currentM > 45 ? `Live: 45+${formatClock(state.displaySec - 45*60)}` : `Live: ${formatClock(state.displaySec)}`;
+            } else if (state.phase === '2H') {
+                clockText = state.currentM > 90 ? `Live: 90+${formatClock(state.displaySec - 90*60)}` : `Live: ${formatClock(state.displaySec)}`;
+            } else if (state.phase === 'HT') {
+                clockText = `Half Time`;
+            }
+            featuredClock.textContent = clockText;
+        }
+    } else {
+        const finished = MATCH_SCHEDULE.filter(m => getLiveState(m, now).phase === 'FT');
         const last = finished[finished.length - 1];
         if (last) {
-            badge.textContent = `Full time · Matchday ${last.matchday || MATCH_SCHEDULE.find(m => m.homeTeam === last.home && m.awayTeam === last.away).matchday}`;
-            document.getElementById('fTitle').textContent = `${last.home} vs ${last.away}`;
+            badge.textContent = `Full time · Matchday ${last.matchday}`;
+            document.getElementById('fTitle').textContent = `${last.homeTeam} vs ${last.awayTeam}`;
             document.getElementById('fSub').textContent = 'Full time';
-            document.getElementById('fTeams').innerHTML = `${crest(last.home,'lg')} <span>${last.home}</span><span class="f-vs">${last.homeScore} – ${last.awayScore}</span><span>${last.away}</span> ${crest(last.away,'lg')}`;
+            document.getElementById('fTeams').innerHTML = `${crest(last.homeTeam,'lg')} <span>${last.homeTeam}</span><span class="f-vs">${last.homeScore} – ${last.awayScore}</span><span>${last.awayTeam}</span> ${crest(last.awayTeam,'lg')}`;
         }
     }
 
@@ -2063,7 +2083,7 @@ function matchRowHtml(m) {
     } else {
         timeDisplay = live.currentM > 90 ? `90+${formatClock(live.displaySec - 90*60)}` : formatClock(live.displaySec);
     }
-    status = `<span class="st-main live" style="color:var(--accent);display:flex;gap:6px;align-items:center;"><i class="live-dot" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);"></i>${timeDisplay}</span><span class="st-sub" style="font-size:11px;font-weight:600;color:var(--muted)">Live</span>`;
+    status = `<span class="st-main live" style="color:var(--accent);display:flex;gap:6px;align-items:center;"><i class="live-dot" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);"></i><span id="clock-${m.id}">${timeDisplay}</span></span><span class="st-sub" style="font-size:11px;font-weight:600;color:var(--muted)">Live</span>`;
   } else if (live.phase === 'HT') {
     state = 'live';
     status = `<span class="st-main ht" style="color:#ffd97a;">HT</span><span class="st-sub" style="font-size:11px;font-weight:600;color:var(--muted)">${formatClock(live.displaySec)}</span>`;
@@ -2566,9 +2586,44 @@ function tick() {
         homeSig = sig;
         if (document.getElementById('homeView').style.display !== 'none') renderHome();
         if (document.getElementById('standingsView').style.display !== 'none') updateStats();
+        if (document.getElementById('matchesView').style.display !== 'none') renderMatches();
     }
     
-    if (document.getElementById('matchesView').style.display !== 'none') renderMatches();
+    if (document.getElementById('matchesView').style.display !== 'none') {
+        MATCH_SCHEDULE.forEach(m => {
+            const clockEl = document.getElementById(`clock-${m.id}`);
+            if (clockEl) {
+                let timeDisplay = '';
+                if (m.phase === '1H') {
+                    timeDisplay = m.currentM > 45 ? `45+${formatClock(m.displaySec - 45*60)}` : formatClock(m.displaySec);
+                } else if (m.phase === '2H') {
+                    timeDisplay = m.currentM > 90 ? `90+${formatClock(m.displaySec - 90*60)}` : formatClock(m.displaySec);
+                }
+                if (timeDisplay) clockEl.textContent = timeDisplay;
+            }
+        });
+    }
+    
+    const featuredClock = document.getElementById('featured-clock');
+    if (featuredClock) {
+        const liveMatch = MATCH_SCHEDULE.find(m => {
+            const phase = getLiveState(m, now).phase;
+            return phase === '1H' || phase === '2H' || phase === 'HT';
+        });
+        if (liveMatch) {
+            const state = getLiveState(liveMatch, now);
+            let clockText = '';
+            if (state.phase === '1H') {
+                clockText = state.currentM > 45 ? `Live: 45+${formatClock(state.displaySec - 45*60)}` : `Live: ${formatClock(state.displaySec)}`;
+            } else if (state.phase === '2H') {
+                clockText = state.currentM > 90 ? `Live: 90+${formatClock(state.displaySec - 90*60)}` : `Live: ${formatClock(state.displaySec)}`;
+            } else if (state.phase === 'HT') {
+                clockText = `Half Time`;
+            }
+            featuredClock.textContent = clockText;
+        }
+    }
+    
     if (activeMatchId) updateModalData();
 }
 
