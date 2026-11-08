@@ -1313,7 +1313,9 @@ function parseSchedule(text) {
             let hours = parseInt(timeMatch[1], 10);
             if (timeMatch[3] === 'PM' && hours !== 12) hours += 12;
             if (timeMatch[3] === 'AM' && hours === 12) hours = 0;
-            const teamsMatch = line.match(/—\s*(.+?)\s*vs\s*(.+)/);
+            
+            // Strict regex requires spaces around "vs" to avoid splitting names like "Moravsky"
+            const teamsMatch = line.match(/—\s*(.+?)\s+vs\s+(.+)/);
             if (teamsMatch) {
                 const cleanName = str => str.replace(/[\u{1F1E6}-\u{1F1FF}]/gu, '').replace(/—/g, '').trim();
                 const home = cleanName(teamsMatch[1]);
@@ -1361,15 +1363,19 @@ function parseSchedule(text) {
                     return squad[idx] || { name: "Unknown" };
                 };
 
+                const determinePhase = (minute) => minute <= 45 + injuryTime1H ? '1H' : '2H';
+
                 // Normal Goals
                 for (let i = 0; i < homeGoals; i++) {
                     const goalRng = mulberry32(hashString(matchId + "_gh_" + i));
                     const scorer = getOutfieldPlayer(homeSquad, goalRng);
                     const minute = randInt(1, maxMinute);
+                    const phase = determinePhase(minute);
                     
                     if (goalRng() < 0.02) { // 2% chance offside
                         events.push({
                             minute,
+                            phase,
                             type: "goal_disallowed",
                             team: "home",
                             desc: `Goal disallowed! ${scorer.name} (${home}) is caught offside.`
@@ -1382,6 +1388,7 @@ function parseSchedule(text) {
                         }
                         events.push({
                             minute,
+                            phase,
                             type: "goal",
                             team: "home",
                             scorerName: scorer.name,
@@ -1394,10 +1401,12 @@ function parseSchedule(text) {
                     const goalRng = mulberry32(hashString(matchId + "_ga_" + i));
                     const scorer = getOutfieldPlayer(awaySquad, goalRng);
                     const minute = randInt(1, maxMinute);
+                    const phase = determinePhase(minute);
                     
                     if (goalRng() < 0.02) { // 2% chance offside
                         events.push({
                             minute,
+                            phase,
                             type: "goal_disallowed",
                             team: "away",
                             desc: `Goal disallowed! ${scorer.name} (${away}) is caught offside.`
@@ -1410,6 +1419,7 @@ function parseSchedule(text) {
                         }
                         events.push({
                             minute,
+                            phase,
                             type: "goal",
                             team: "away",
                             scorerName: scorer.name,
@@ -1428,10 +1438,12 @@ function parseSchedule(text) {
                     const squad = isHome ? homeSquad : awaySquad;
                     const taker = getOutfieldPlayer(squad, rng);
                     const minute = randInt(1, maxMinute);
+                    const phase = determinePhase(minute);
                     
                     if (rng() < 0.76) { // 76% conversion rate
                         events.push({
                             minute,
+                            phase,
                             type: "goal",
                             isPen: true,
                             team: team,
@@ -1442,6 +1454,7 @@ function parseSchedule(text) {
                     } else {
                         events.push({
                             minute,
+                            phase,
                             type: "penalty_miss",
                             team: team,
                             desc: `Missed penalty! ${taker.name} (${teamName}) fails to convert from the spot.`
@@ -1458,13 +1471,15 @@ function parseSchedule(text) {
                     const squad = team === 'home' ? homeSquad : awaySquad;
                     const player = getEventPlayer(squad, rng);
                     const action = pick(actionTypes);
+                    const minute = randInt(1, maxMinute);
+                    const phase = determinePhase(minute);
                     let desc = '';
                     if (action === 'foul') desc = `Foul on ${player.name} (${teamName}). Freekick awarded to ${oppName}.`;
                     else if (action === 'shot_wide') desc = `Shot hit wide of the goal by ${player.name} (${teamName}).`;
                     else if (action === 'shot_save') desc = `Great save! The keeper denies ${player.name} (${teamName}).`;
                     else if (action === 'corner') desc = `Corner awarded to ${teamName}.`;
                     else if (action === 'offside') desc = `Offside against ${player.name} (${teamName}). Freekick awarded to ${oppName}.`;
-                    events.push({ minute: randInt(1, maxMinute), type: "action", team: team, desc: desc });
+                    events.push({ minute, phase, type: "action", team: team, desc: desc });
                 }
 
                 // Cards
@@ -1472,7 +1487,9 @@ function parseSchedule(text) {
                     const isHome = rng() > 0.5;
                     const teamName = isHome ? home : away;
                     const player = getEventPlayer(isHome ? homeSquad : awaySquad, rng);
-                    events.push({ minute: randInt(15, maxMinute), type: "yellow", team: isHome ? "home" : "away", desc: `Yellow card for ${player.name} (${teamName}).` });
+                    const minute = randInt(15, maxMinute);
+                    const phase = determinePhase(minute);
+                    events.push({ minute, phase, type: "yellow", team: isHome ? "home" : "away", desc: `Yellow card for ${player.name} (${teamName}).` });
                 }
 
                 // Red Cards (Rare)
@@ -1480,7 +1497,9 @@ function parseSchedule(text) {
                     const isHome = rng() > 0.5;
                     const teamName = isHome ? home : away;
                     const player = getEventPlayer(isHome ? homeSquad : awaySquad, rng);
-                    events.push({ minute: randInt(30, 85), type: "red", team: isHome ? "home" : "away", desc: `RED CARD! ${player.name} (${teamName}) is sent off.` });
+                    const minute = randInt(30, 85);
+                    const phase = determinePhase(minute);
+                    events.push({ minute, phase, type: "red", team: isHome ? "home" : "away", desc: `RED CARD! ${player.name} (${teamName}) is sent off.` });
                 }
 
                 // Injuries (RARE - 4% chance)
@@ -1494,8 +1513,12 @@ function parseSchedule(text) {
                     else if (injType === 2) durationText = `${randInt(2, 4)} weeks`;
                     else durationText = `${randInt(1, 3)} months`;
 
+                    const minute = randInt(10, 85);
+                    const phase = determinePhase(minute);
+
                     events.push({
-                        minute: randInt(10, 85),
+                        minute,
+                        phase,
                         type: "injury",
                         team: isHome ? "home" : "away",
                         desc: `Injury: ${player.name} (${teamName}) is forced off. Out for ${durationText}.`
@@ -1506,14 +1529,19 @@ function parseSchedule(text) {
                 const finalHomeScore = events.filter(e => e.type === 'goal' && e.team === 'home').length;
                 const finalAwayScore = events.filter(e => e.type === 'goal' && e.team === 'away').length;
 
-                events.push({ minute: 0, type: "phase", phase: "1H", desc: "Referee blows for the start of the first half." });
-                events.push({ minute: 45, type: "phase", phase: "1H", desc: `The match official has announced ${injuryTime1H} minutes of added time.` });
-                events.push({ minute: 45 + injuryTime1H, type: "phase", phase: "1H", desc: "Referee blows for the end of the first half." });
-                events.push({ minute: 45, type: "phase", phase: "2H", desc: "Referee blows for the start of the second half." });
-                events.push({ minute: 90, type: "phase", phase: "2H", desc: `The match official has announced ${injuryTime2H} minutes of added time.` });
-                events.push({ minute: maxMinute, type: "phase", phase: "2H", desc: `Referee blows for the end of the game. Final score: ${finalHomeScore}-${finalAwayScore}.` });
+                events.push({ minute: 0, phase: "1H", type: "phase", desc: "Referee blows for the start of the first half." });
+                events.push({ minute: 45, phase: "1H", type: "phase", desc: `The match official has announced ${injuryTime1H} minutes of added time.` });
+                events.push({ minute: 45 + injuryTime1H, phase: "1H", type: "phase", desc: "Referee blows for the end of the first half." });
+                
+                events.push({ minute: 45, phase: "2H", type: "phase", desc: "Referee blows for the start of the second half." });
+                events.push({ minute: 90, phase: "2H", type: "phase", desc: `The match official has announced ${injuryTime2H} minutes of added time.` });
+                events.push({ minute: maxMinute, phase: "2H", type: "phase", desc: `Referee blows for the end of the game. Final score: ${finalHomeScore}-${finalAwayScore}.` });
 
-                events.sort((a,b) => a.minute - b.minute);
+                // Group all 1H events before all 2H events, then sort by minute
+                events.sort((a,b) => {
+                    if (a.phase !== b.phase) return a.phase === '1H' ? -1 : 1;
+                    return a.minute - b.minute;
+                });
 
                 matches.push({
                     id: matchId, matchday: currentMatchday, homeTeam: home, awayTeam: away,
@@ -2295,7 +2323,7 @@ function appendEventToModal(e) {
     row.className = 'event-row';
     row.style.cssText = rowClass;
     row.innerHTML = `
-        <div class="event-min">${e.minute}'</div>
+        <div class="event-min">${Math.floor(e.minute)}'</div>
         <div class="event-icon">${icon}</div>
         <div class="event-text">${e.desc}</div>
     `;
@@ -2365,8 +2393,8 @@ function updateModalData() {
     const evContainer = document.getElementById('mEvents');
     const visibleEvents = m.events.filter(e => {
         if (live.phase === 'FT') return true;
-        if (live.phase === '1H' && e.phase === '2H') return false;
-        if (live.phase === 'HT' && e.phase === '2H') return false;
+        if (e.phase === '1H') return true;
+        if (live.phase === '1H' || live.phase === 'HT') return false;
         return e.minute <= live.currentM;
     });
 
