@@ -1467,6 +1467,7 @@ function parseSchedule(text) {
                             const a = getOutfieldPlayer(homeSquad, goalRng);
                             if (a.name !== scorer.name) assister = a;
                         }
+                        const assistText = assister ? ` Assisted by ${assister.name}.` : '';
                         events.push({
                             minute,
                             phase,
@@ -1474,7 +1475,7 @@ function parseSchedule(text) {
                             team: "home",
                             scorerName: scorer.name,
                             assisterName: assister ? assister.name : null,
-                            desc: `GOAL! ${scorer.name} scores for ${home}!`
+                            desc: `GOAL! ${scorer.name} scores for ${home}!${assistText}`
                         });
                     }
                 }
@@ -1498,6 +1499,7 @@ function parseSchedule(text) {
                             const a = getOutfieldPlayer(awaySquad, goalRng);
                             if (a.name !== scorer.name) assister = a;
                         }
+                        const assistText = assister ? ` Assisted by ${assister.name}.` : '';
                         events.push({
                             minute,
                             phase,
@@ -1505,7 +1507,7 @@ function parseSchedule(text) {
                             team: "away",
                             scorerName: scorer.name,
                             assisterName: assister ? assister.name : null,
-                            desc: `GOAL! ${scorer.name} scores for ${away}!`
+                            desc: `GOAL! ${scorer.name} scores for ${away}!${assistText}`
                         });
                     }
                 }
