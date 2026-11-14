@@ -2493,9 +2493,13 @@ function updateModalData() {
     const visibleEvents = m.events.filter(e => {
         if (live.phase === 'upcoming') return false;
         if (live.phase === 'FT') return true;
-        if (e.phase === '1H') return true;
-        if (live.phase === '1H' || live.phase === 'HT') return false;
-        return e.minute <= live.currentM;
+        if (live.phase === '1H' || live.phase === 'HT') {
+            return e.phase === '1H' && e.minute <= live.currentM;
+        }
+        if (live.phase === '2H') {
+            return e.phase === '1H' || (e.phase === '2H' && e.minute <= live.currentM);
+        }
+        return false;
     });
 
     const currentCount = evContainer.children.length;
