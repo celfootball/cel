@@ -2491,6 +2491,7 @@ function updateModalData() {
 
     const evContainer = document.getElementById('mEvents');
     const visibleEvents = m.events.filter(e => {
+        if (live.phase === 'upcoming') return false;
         if (live.phase === 'FT') return true;
         if (e.phase === '1H') return true;
         if (live.phase === '1H' || live.phase === 'HT') return false;
